@@ -1,12 +1,28 @@
-version: "3.9"
+version: '3.1'
+
 services:
-  postgres:
+  chatops-db:
     image: postgres
+    restart: always
     environment:
-      POSTGRES_DB: "postgres"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB : debug
     volumes:
-      - .:/docker-entrypoint-initdb.d
+      - chatops-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - 6432:5432
+    networks:
+      - pg
+    #TODO : healthcheck
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+  #TODO: exporter prometheuscommunity/postgres-exporter:v0.10.1
+volumes:
+  chatops-data:
+networks:
+  pg:
+    driver: bridge
