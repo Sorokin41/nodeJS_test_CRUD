@@ -26,3 +26,6 @@ volumes:
 networks:
   pg:
     driver: bridge
+
+## docker run --name vault -p 8200:8200 vault:1.7.3
+## https://codersociety.com/blog/articles/hashicorp-vault-node
