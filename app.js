@@ -7,11 +7,11 @@ const app = express()
 app.get('/userdata', async (req, res) => {
     try {
         const newUser = await pool.query(
-            `SELECT * FROM newtable`
+            `SELECT * FROM public.newtable`
         )
         res.json(newUser)
     } catch (err) {
-        console.error(err +  ' ошибка');
+        console.error(err);
     }
 })
 

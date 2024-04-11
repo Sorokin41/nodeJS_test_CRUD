@@ -1,6 +1,7 @@
 version: '3.1'
 
 services:
+  
   chatops-db:
     image: postgres
     restart: always
@@ -11,8 +12,8 @@ services:
     volumes:
       - chatops-data:/var/lib/postgresql/data
     ports:
-      - 6432:5432
-    networks:
+      - "6432:5432"
+    networks: 
       - pg
     #TODO : healthcheck
     deploy:
@@ -20,12 +21,37 @@ services:
         limits:
           cpus: '1'
           memory: 1G
+
+  my_app:
+    build: .
+    ports:
+      - "4000:4000"
+    networks: 
+      - pg
+    env_file:
+      - .env
+      
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./:/etc/nginx/html
+    depends_on:
+      - my_app
+    networks: 
+      - pg
+
+
+
   #TODO: exporter prometheuscommunity/postgres-exporter:v0.10.1
 volumes:
   chatops-data:
+
 networks:
   pg:
-    driver: bridge
+    driver: bridge 
 
 ## docker run --name vault -p 8200:8200 vault:1.7.3
 ## https://codersociety.com/blog/articles/hashicorp-vault-node
