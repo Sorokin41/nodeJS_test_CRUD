@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu:latest
+    runs-on: self-hosted
 
     steps:
 
@@ -24,16 +24,11 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu:latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Set up Docker Compose
-        uses: docker/compose-cli@v0.1.0
-        with:
-          compose-version: '1.29.2'
 
       - name: Deploy with Docker Compose
         run: docker-compose up -d
