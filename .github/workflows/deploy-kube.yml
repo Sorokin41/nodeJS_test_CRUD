@@ -1,0 +1,29 @@
+name: Deploy to Minikube
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Set up minikube
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Install minikube
+        run: |
+          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+      - name: Start minikube
+        run: minikube start --vm-driver=none
+      - name: Set up kubectl
+        run: |
+          mkdir -p ~/.kube
+          touch ~/.kube/config
+          minikube kubectl -- get pods
+      - name: Deploy application
+        run: kubectl apply -f ./manifests/deployment.yaml
