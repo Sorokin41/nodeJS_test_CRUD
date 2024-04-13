@@ -52,7 +52,7 @@ spec:
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
             - name: nginx-html
-              mountPath: /etc/nginx/html
+              mountPath: /usr/share/nginx/html
       volumes:
         - name: nginx-conf
           configMap:
