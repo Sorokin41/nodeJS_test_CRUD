@@ -14,10 +14,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - name: Install minikube
-        run: |
-          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-          sudo install minikube-linux-amd64 /usr/local/bin/minikube
       - name: Start minikube
         run: minikube start --vm-driver=none
       - name: Set up kubectl
