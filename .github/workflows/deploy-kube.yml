@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: '16'
       - name: Start minikube
-        run: minikube start --vm-driver=none
+        run: minikube start --vm-driver=docker
       - name: Set up kubectl
         run: |
           mkdir -p ~/.kube
