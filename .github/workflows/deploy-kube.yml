@@ -22,7 +22,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker buildx build --platform node -t ${{ secrets.DOCKERHUB_USERNAME }}/nodejs_test_crud-my_app:latest .
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nodejs_test_crud-my_app:latest .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/nodejs_test_crud-my_app:latest
 
 
