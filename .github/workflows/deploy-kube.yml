@@ -40,8 +40,8 @@ jobs:
       #     touch ~/.kube/config
       #     minikube kubectl -- get pods
       - name: create configMaps
-        run: kubectl create configmap nginx-config --from-file=./nginx.conf &&
-             kubectl create configmap nginx-html --from-file=./index.html
+        run: kubectl create configmap nginx-config --from-file=./nginx.conf --dry-run=client &&
+             kubectl create configmap nginx-html --from-file=./index.html --dry-run=client
 
       - name: Deploy application
         run: kubectl apply -f ./manifests/deployment.yaml
