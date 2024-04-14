@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chatops-db-deployment
+  name: chatops-deployment
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: chatops-db
+      app: chatops
   template:
     metadata:
       labels:
-        app: chatops-db
+        app: chatops
     spec:
       containers:
         - name: chatops-db
@@ -24,25 +24,13 @@ spec:
               value: debug
           ports:
             - containerPort: 5432
-          volumes:
+          volumeMounts:
             - name: chatops-data
               mountPath: /var/lib/postgresql/data
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx-deployment
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
+        - name: my-app
+          image: sorokin21/nodejs_test_crud-my_app:latest
+          ports:
+            - containerPort: 4000
         - name: nginx
           image: nginx:latest
           ports:
@@ -54,11 +42,14 @@ spec:
             - name: nginx-html
               mountPath: /etc/nginx/html
       volumes:
-        - name: nginx-conf
-          configMap:
-            name: nginx-conf
-        - name: nginx-html
+        - name: chatops-data
           emptyDir: {}
+        - name: nginx-conf
+          hostPath:
+            path: /path/to/nginx.conf
+        - name: nginx-html
+          hostPath:
+            path: /path/to/html
 
 ---
 apiVersion: v1
