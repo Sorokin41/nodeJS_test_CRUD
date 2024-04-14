@@ -31,7 +31,7 @@ jobs:
       - name: Set up minikube
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: '21'
       - name: Start minikube
         run: minikube start --vm-driver=docker
       - name: Set up kubectl
