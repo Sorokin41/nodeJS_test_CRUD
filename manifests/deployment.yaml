@@ -55,7 +55,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: chatops-db-service
+  name: chatops-db
 spec:
   selector:
     app: chatops-db
@@ -68,7 +68,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: my-app-service
+  name: my-app
 spec:
   selector:
     app: my-app
@@ -81,7 +81,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-service
+  name: nginx
 spec:
   selector:
     app: nginx
