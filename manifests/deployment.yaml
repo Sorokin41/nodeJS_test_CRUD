@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chatops-deployment
+  name: my-app-pod
 spec:
   replicas: 3
   selector:
@@ -45,11 +45,11 @@ spec:
         - name: chatops-data
           emptyDir: {}
         - name: nginx-conf
-          hostPath:
-            path: ./nginx.conf
+          configMap:
+            name: nginx-config
         - name: nginx-html
-          hostPath:
-            path: ./index.html
+          configMap:
+            name: nginx-html
 
 ---
 apiVersion: v1

@@ -39,5 +39,9 @@ jobs:
       #     mkdir -p ~/.kube
       #     touch ~/.kube/config
       #     minikube kubectl -- get pods
+      - name: create configMaps
+        run: kubectl create configmap nginx-config --from-file=./nginx.conf
+             kubectl create configmap nginx-html --from-file=./index.html
+
       - name: Deploy application
-        run: kubectl apply -f ./deployment.yaml
+        run: kubectl apply -f ./manifests/deployment.yaml
