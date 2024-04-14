@@ -46,10 +46,10 @@ spec:
           emptyDir: {}
         - name: nginx-conf
           hostPath:
-            path: /path/to/nginx.conf
+            path: ./nginx.conf
         - name: nginx-html
           hostPath:
-            path: /path/to/html
+            path: ./index.html
 
 ---
 apiVersion: v1
