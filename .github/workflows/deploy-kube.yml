@@ -40,4 +40,4 @@ jobs:
           touch ~/.kube/config
           minikube kubectl -- get pods
       - name: Deploy application
-        run: kubectl apply -f ./manifests/deployment.yaml
+        run: kubectl apply -f ./deployment.yaml
