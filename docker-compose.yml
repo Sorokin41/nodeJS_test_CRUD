@@ -42,8 +42,32 @@ services:
       - my_app
     networks: 
       - pg
+  
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - '9090:9090'
+    networks:
+      - pg
 
-
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/config.ini:/etc/grafana/config.ini
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    ports:
+      - '3000:3000'
+    networks:
+      - pg
 
   #TODO: exporter prometheuscommunity/postgres-exporter:v0.10.1
 volumes:
