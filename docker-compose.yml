@@ -16,34 +16,43 @@ services:
     networks: 
       - pg
     #TODO : healthcheck
-    deploy:
+    deploy: 
       resources:
         limits:
           cpus: '1'
           memory: 1G
 
   my_app:
-    build: .
+    image: registry.example.com/root/my_project:main
     ports:
       - "4000:4000"
     depends_on:
       - chatops-db
-    networks: 
+    networks:
       - pg
 
-
-      
-  nginx:
-    image: nginx:latest
+  envoy:
+    image: envoyproxy/envoy-alpine:v1.18-latest
     ports:
-      - "80:80"
+      - "8080:8080"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./:/etc/nginx/html
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
     depends_on:
       - my_app
     networks: 
       - pg
+      
+  # nginx:
+  #   image: nginx:latest
+  #   ports:
+  #     - "8080:80"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #     - ./:/etc/nginx/html
+  #   depends_on:
+  #     - my_app 
+  #   networks: 
+  #     - pg
   
   prometheus:
     image: prom/prometheus:latest
@@ -59,6 +68,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     volumes:
+      - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/config.ini:/etc/grafana/config.ini
       - ./grafana/dashboards:/var/lib/grafana/dashboards
@@ -74,6 +84,7 @@ services:
   #TODO: exporter prometheuscommunity/postgres-exporter:v0.10.1
 volumes:
   chatops-data:
+  grafana_data:
 
 networks:
   pg:

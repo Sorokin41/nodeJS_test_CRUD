@@ -10,7 +10,7 @@ client.collectDefaultMetrics({ register });
 const httpRequestMethods = new client.Counter({
   name: 'http_request_methods_total',
   help: 'Total number of HTTP requests, grouped by method',
-  labelNames: ['method'],
+  labelNames: ['method', 'status_code'],
   registers: [register]
 });
 
@@ -24,8 +24,8 @@ const httpResponseTime = new client.Histogram({
 });
 
 // Функция для увеличения счетчика методов
-function incrementHttpRequestMethod(method) {
-  httpRequestMethods.labels(method).inc();
+function incrementHttpRequestMethod(method, status_code) {
+  httpRequestMethods.labels(method,status_code).inc();
 }
 
 // Middleware для замера времени ответа
