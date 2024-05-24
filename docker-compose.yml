@@ -32,28 +32,29 @@ services:
     networks:
       - pg
 
-  envoy:
-    image: envoyproxy/envoy-alpine:v1.18-latest
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./envoy.yaml:/etc/envoy/envoy.yaml
-    depends_on:
-      - my_app
-    networks: 
-      - pg
-      
-  # nginx:
-  #   image: nginx:latest
+  # envoy:
+  #   image: envoyproxy/envoy-alpine:v1.18-latest
   #   ports:
-  #     - "80:80"
+  #     - "8080:8080"
   #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf
-  #     - ./:/etc/nginx/html
+  #     - ./envoy.yaml:/etc/envoy/envoy.yaml
   #   depends_on:
-  #     - my_app 
+  #     - my_app
   #   networks: 
   #     - pg
+      
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./:/etc/nginx/html
+      - ./logs:/var/log/nginx/
+    depends_on:
+      - my_app 
+    networks: 
+      - pg
   
   prometheus:
     image: prom/prometheus:latest
@@ -79,6 +80,34 @@ services:
       - prometheus
     ports:
       - '3000:3000'
+    networks:
+      - pg
+
+  loki:
+    image: grafana/loki:2.2.1
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./grafana-loki/loki-config.yaml:/etc/loki/local-config.yaml
+    networks:
+      - pg
+
+  promtail:
+    image: grafana/promtail:2.2.1
+    volumes:
+      - ./promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - ./logs:/usr/src/app/logs
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    ports:
+      - "9080:9080"
+    networks:
+      - pg
+  
+  node_exporter:
+    image: prom/node-exporter
+    ports:
+      - "9100:9100"
     networks:
       - pg
 

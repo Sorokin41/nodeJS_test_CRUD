@@ -1,5 +1,6 @@
 const db = require('../db/pool')
-const { incrementHttpRequestMethod, responseTimeMiddleware } = require('../metrics/metrics')
+const { incrementHttpRequestMethod } = require('../metrics/metrics')
+const logger = require('../logger/logger')
 
 class UserController{
 
@@ -7,12 +8,16 @@ class UserController{
         incrementHttpRequestMethod(req.method, res.statusCode)
         const {name, surname} = req.body
         const newPerson = await db.query('INSERT INTO person (name, surname) values ($1, $2) RETURNING *', [name, surname])
+        logger.info(`url: ${req.url}, status: ${res.statusCode}, method:${req.method}`)
+        logger.info(newPerson.rows[0])
         res.json(newPerson.rows[0])
     }
 
     async getUsers(req, res) {
         incrementHttpRequestMethod(req.method, res.statusCode)
         const users = await db.query('SELECT * FROM person')
+        logger.info(`url: ${req.url}, status: ${res.statusCode}, method:${req.method}`)
+        logger.info(users.rows)
         res.json(users.rows)
     }
 
@@ -20,6 +25,7 @@ class UserController{
         incrementHttpRequestMethod(req.method, res.statusCode)
         const id = req.params.id
         const user = await db.query('SELECT * FROM person WHERE id = $1', [id])
+        logger.info(user.rows[0])
         res.json(user.rows[0])
     }
 

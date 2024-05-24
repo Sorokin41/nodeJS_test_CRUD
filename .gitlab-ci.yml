@@ -16,6 +16,8 @@ build:
     - docker build -t $IMAGE_TAG .
     - echo $IMAGE_TAG
     - docker push $IMAGE_TAG
+  tags:
+    - docker
   only:
     - main
 
