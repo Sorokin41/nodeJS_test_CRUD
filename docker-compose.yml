@@ -1,7 +1,38 @@
 version: '3.1'
 
 services:
-  
+
+  my_app:
+    build: .
+    restart: always
+    ports:
+      - "4000:4000"
+    links:
+      - fluentd
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: docker.my_app
+    networks:
+      - pg
+    depends_on:
+      - chatops-db
+      - fluentd
+
+  fluentd:
+    image: fluent/fluentd:v1.12-1
+    ports:
+      - "24224:24224"
+    volumes:
+      - ./fluentd/conf:/fluentd/etc/
+      - ./fluentd/log:/fluentd/log
+      - ./fluentd/buffer:/fluentd/buffer
+    environment:
+      FLUENTD_CONF: fluentd.conf
+    networks:
+      - pg
+
   chatops-db:
     image: postgres
     restart: always
@@ -14,22 +45,6 @@ services:
     ports:
       - "6432:5432"
     networks: 
-      - pg
-    #TODO : healthcheck
-    deploy: 
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-
-  my_app:
-    build: .
-    restart: always
-    ports:
-      - "4000:4000"
-    depends_on:
-      - chatops-db
-    networks:
       - pg
 
   # envoy:
@@ -94,11 +109,13 @@ services:
       - pg
 
   promtail:
-    image: grafana/promtail:2.2.1
+    image: grafana/promtail:2.0.0
     volumes:
-      - ./promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
-      - ./logs:/usr/src/app/logs
+      - ./promtail:/etc/promtail
+      - ./fluentd/log:/fluent/buffer
     command: -config.file=/etc/promtail/promtail-config.yaml
+    depends_on:
+      - loki
     ports:
       - "9080:9080"
     networks:
