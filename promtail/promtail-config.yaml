@@ -15,7 +15,7 @@ scrape_configs:
           - my_app
         labels:
           job: nginx
-          __path__: /usr/src/app/logs/*.log
+          __path__: /usr/src/app/logs/nginx/*.log
 
   - job_name: my_app
     static_configs:
@@ -23,4 +23,4 @@ scrape_configs:
           - my_app
         labels:
           job: my_app
-          __path__: /usr/src/app/*.log
+          __path__: /usr/src/app/logs/app/*.log

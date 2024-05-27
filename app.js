@@ -1,18 +1,7 @@
 const express = require('express')
 require('dotenv').config()
-const winston = require('winston');
+const logger = require('./src/logger/logger')
 
-
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  transports: [
-    new winston.transports.File({ filename: 'app.log' }),
-    new winston.transports.Console()
-  ]
-});
-
-logger.log('info', 'Пример логирования в файл');
 
 const userRouter = require('./src/routes/user.routes')
 const { metricsMiddleware } = require('./src/metrics/metrics')
@@ -29,5 +18,5 @@ app.use((req, res, next) => {
 app.get('/metrics', metricsMiddleware);
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server was started on port ${process.env.PORT}`)
+  logger.info(` pid: ${process.pid}, timestamp: ${new Date().getTime()} message: Server was started on port ${process.env.PORT} `)
 })
