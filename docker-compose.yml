@@ -51,6 +51,7 @@ services:
   #     - my_app
   #   networks: 
   #     - pg
+
       
   nginx:
     image: nginx:latest
