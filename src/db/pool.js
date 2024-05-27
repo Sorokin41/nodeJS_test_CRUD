@@ -1,7 +1,6 @@
 const Pool = require('pg').Pool
 const logger = require('../logger/logger')
 
-
 const pool = new Pool({
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
@@ -18,5 +17,6 @@ pool.query(`
 `).then(() => {
     logger.log('info', 'Table is successfully created or already exists');
 })
+
 
 module.exports = pool;
