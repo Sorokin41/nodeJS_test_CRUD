@@ -1,20 +1,23 @@
 const express = require('express')
 require('dotenv').config()
-const pool = require('./src/db/pool')
+
+const logger = require('./src/logger/logger')
+
+
+const userRouter = require('./src/routes/user.routes')
+const { metricsMiddleware } = require('./src/metrics/metrics')
 
 const app = express()
+app.use(express.json())
+app.use('/', userRouter)
 
-app.get('/userdata', async (req, res) => {
-    try {
-        const newUser = await pool.query(
-            `SELECT * FROM public.newtable`
-        )
-        res.json(newUser)
-    } catch (err) {
-        console.error(err);
-    }
-})
+
+app.use((req, res, next) => {
+    next()
+  })
+
+app.get('/metrics', metricsMiddleware);
 
 app.listen(process.env.PORT, () => {
-    console.log(`Server was started on port ${process.env.PORT}`)
+  logger.info(` pid: ${process.pid}, timestamp: ${new Date().getTime()} message: Server was started on port ${process.env.PORT} `)
 })

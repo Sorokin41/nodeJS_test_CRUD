@@ -1,0 +1,32 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
+build:
+  stage: build
+  image: docker:19.03.12
+  services:
+    - docker:dind
+  script:
+    - echo "Building Docker image..."
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $IMAGE_TAG .
+    - echo $IMAGE_TAG
+    - docker push $IMAGE_TAG
+  tags:
+    - docker
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  image: docker/compose:1.29.2
+  script:
+    - echo "Deploying using Docker Compose..."
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker-compose up -d
+  only: 
+    - main
