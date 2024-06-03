@@ -1,12 +1,14 @@
 stages:
-  - build
-  - deploy
+  - gitlab-registry-build
+  - dockerhub-build
+  # - docker-compose-deploy
+  - kubernetes-deploy
 
 variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
-build:
-  stage: build
+gitlab-registry-build:
+  stage: gitlab-registry-build
   image: docker:19.03.12
   services:
     - docker:dind
@@ -21,12 +23,37 @@ build:
   only:
     - main
 
-deploy:
-  stage: deploy
-  image: docker/compose:1.29.2
+dockerhub-build:
+  stage: dockerhub-build
+  image: docker:19.03.12
+  services:
+    - docker:dind
   script:
-    - echo "Deploying using Docker Compose..."
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker-compose up -d
-  only: 
+    - echo "Building Docker image..."
+    - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+    - docker build -t sorokin21/nodejs_test_crud-my_app:latest . 
+    - docker push sorokin21/nodejs_test_crud-my_app:latest
+  only:
     - main
+
+# docker-compose-deploy:
+#   stage: docker-compose-deploy
+#   image: docker/compose:1.29.2
+#   script:
+#     - echo "Deploying using Docker Compose..."
+#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#     - docker-compose up -d
+#   only: 
+#     - main
+
+kubernetes-deploy:
+  stage: kubernetes-deploy
+  script:
+    - echo "Deploying using kubernetes..."
+    - docker login -u sorokin21 -p xtkjdtrgfer01
+    - minikube start --driver=docker
+    - minikube addons enable logviewer
+    - kubectl config use-context minikube
+    - kubectl apply -f ./manifests/
+  only: 
+    - main 

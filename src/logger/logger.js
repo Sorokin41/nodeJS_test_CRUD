@@ -1,13 +1,3 @@
-const winston = require('winston');
+const pino = require("pino")
 
-
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  transports: [
-    new winston.transports.File({ filename: './logs/app/app.log' }),
-    new winston.transports.Console()
-  ]
-});
-
-module.exports = logger
+module.exports = pino({})
