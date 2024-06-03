@@ -1,9 +1,10 @@
 const Pool = require('pg').Pool
+const logger = require('../logger/logger')
 
 const pool = new Pool({
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
-    host: 'postgres',
+    host: 'chatops-db',
     port: 5432,
     database: process.env.POSTGRES_DB
 });
@@ -14,7 +15,8 @@ pool.query(`
     name VARCHAR(255),
     surname VARCHAR(255));
 `).then(() => {
-    console.log('Table is successfully created or already exists');
+    logger.log('info', 'Table is successfully created or already exists');
 })
+
 
 module.exports = pool;

@@ -1,7 +1,32 @@
 version: '3.1'
 
 services:
-  
+
+  my_app:
+    build: .
+    restart: always
+    ports:
+      - "4000:4000"
+    networks:
+      - pg
+    depends_on:
+      - chatops-db
+    volumes:
+      - ./logs/app:/usr/src/app/logs/app
+
+  # fluentd:
+  #   image: fluent/fluentd:v1.12-1
+  #   ports:
+  #     - "24224:24224"
+  #   volumes:
+  #     - ./fluentd/conf:/fluentd/etc/
+  #     - ./fluentd/log:/fluentd/log
+  #     - ./fluentd/buffer:/fluentd/buffer
+  #   environment:
+  #     FLUENTD_CONF: fluentd.conf
+  #   networks:
+  #     - pg
+
   chatops-db:
     image: postgres
     restart: always
@@ -15,21 +40,6 @@ services:
       - "6432:5432"
     networks: 
       - pg
-    #TODO : healthcheck
-    deploy: 
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-
-  my_app:
-    image: registry.example.com/root/my_project:main
-    ports:
-      - "4000:4000"
-    depends_on:
-      - chatops-db
-    networks:
-      - pg
 
   # envoy:
   #   image: envoyproxy/envoy-alpine:v1.18-latest
@@ -41,6 +51,7 @@ services:
   #     - my_app
   #   networks: 
   #     - pg
+
       
   nginx:
     image: nginx:latest
@@ -49,7 +60,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./:/etc/nginx/html
-      - ./logs:/var/log/nginx/
+      - ./logs/nginx:/var/log/nginx
     depends_on:
       - my_app 
     networks: 
@@ -93,11 +104,14 @@ services:
       - pg
 
   promtail:
-    image: grafana/promtail:2.2.1
+    image: grafana/promtail:2.0.0
     volumes:
-      - ./promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
-      - ./logs:/usr/src/app/logs
+      - ./promtail:/etc/promtail
+      - ./logs/app:/usr/src/app/logs/app
+      - ./logs/nginx:/usr/src/app/logs/nginx
     command: -config.file=/etc/promtail/promtail-config.yaml
+    depends_on:
+      - loki
     ports:
       - "9080:9080"
     networks:
@@ -117,7 +131,3 @@ volumes:
 networks:
   pg:
     driver: bridge 
-
-
-## docker run --name vault -p 8200:8200 vault:1.7.3
-## https://codersociety.com/blog/articles/hashicorp-vault-node
